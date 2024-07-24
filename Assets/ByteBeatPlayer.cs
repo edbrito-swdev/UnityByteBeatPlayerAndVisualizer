@@ -14,6 +14,8 @@ public class ByteBeatPlayer : MonoBehaviour
     private const int spectrumSize = 256;
     private UnityEngine.Vector3[] positionsGreen;
     private UnityEngine.Vector3[] positionsBlue;
+    // Code taken from
+    // https://www.reddit.com/r/bytebeat/comments/1dkiykn/made_bytebeat_player_for_unity_c
 /// <summary>
     /// Plays bytebeat.
     /// </summary>
@@ -54,6 +56,7 @@ public class ByteBeatPlayer : MonoBehaviour
 
 void Update()
     {
+        // Code taken from Unity Documentation for GetSpectrumData
         float[] spectrum = new float[spectrumSize];
         AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 
