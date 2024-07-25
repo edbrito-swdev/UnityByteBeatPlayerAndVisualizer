@@ -14,6 +14,8 @@ public class ByteBeatPlayer : MonoBehaviour
     private const int spectrumSize = 256;
     private UnityEngine.Vector3[] positionsGreen;
     private UnityEngine.Vector3[] positionsBlue;
+    public AudioSource soundSource; 
+
     // Code taken from
     // https://www.reddit.com/r/bytebeat/comments/1dkiykn/made_bytebeat_player_for_unity_c
 /// <summary>
@@ -29,11 +31,12 @@ public class ByteBeatPlayer : MonoBehaviour
     private IEnumerator PlayBytebeat(float time, int freq, AudioClip.PCMReaderCallback beat, string namel = "bytebeat")
     {
         AudioClip clip = AudioClip.Create(namel, (int)(time * freq), 1, freq, false, beat);
-        AudioSource source = gameObject.AddComponent<AudioSource>();
-        source.clip = clip;
-        source.Play();
-        yield return new WaitWhile(() => source.isPlaying);
-        Destroy(source);
+        //AudioSource source = gameObject.AddComponent<AudioSource>();
+        soundSource.clip = clip;
+        soundSource.Play();
+        yield return new WaitWhile(() => soundSource.isPlaying);
+        Application.Quit();
+        //Destroy(soundSource);
     }
 
     private void Start()
@@ -47,20 +50,22 @@ public class ByteBeatPlayer : MonoBehaviour
         {
             for (int t = elapsedCycles * 4096; t < data.Length + (elapsedCycles * 4096); t++)
             {
-                data[t - (elapsedCycles * 4096)] = (byte)( t/30 | t%128+128 - t*4 | t%64 ) / 256f;
+                //data[t - (elapsedCycles * 4096)] = (byte)( t/30 | t%128+128 - t*4 | t%64 ) / 256f;
+                data[t - (elapsedCycles * 4096)] = (byte)(((t << 1) ^ ((t << 1) + (t >> 7) & t >> 12)) | t >> (4 - (1 ^ 7 & (t >> 19))) | t >> 7) / 256f;
             }
 
             elapsedCycles++;
         }));
     }
 
-void Update()
+    void Update()
     {
         // Code taken from Unity Documentation for GetSpectrumData
         float[] spectrum = new float[spectrumSize];
-        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+        //AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 
-        audioSource.GetSpectrumData(spectrum, 0, FFTWindow.Rectangular);
+
+        soundSource.GetSpectrumData(spectrum, 0, FFTWindow.Rectangular);
         int i = 1;
         for ( ; i < spectrum.Length - 1; i++)
         {
@@ -77,5 +82,7 @@ void Update()
         positionsBlue[i].Set(i, Mathf.Log(spectrum[i]) + 10, 2);
         lineRenderer.SetPositions(positionsGreen);
         otherLineRenderer.SetPositions(positionsBlue);
+
+
     }
 }
