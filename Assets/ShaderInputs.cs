@@ -16,11 +16,14 @@ public class ShaderInputs : MonoBehaviour
     [SerializeField] ParticleSystem fireRing1;
     [SerializeField] ParticleSystem fireRing2;
 
+    private CameraShake cameraEffect;
+    
+
     // Start is called before the first frame update
     void Start()
     {
         rend = GetComponent<Renderer>();
-        material = rend.material;
+        material = rend.material;        
         
     }
 
@@ -57,6 +60,7 @@ public class ShaderInputs : MonoBehaviour
         if (loudness < 0.7 && !smokeMachine1.isPlaying)
         {
             ActivateSmoke();
+            //StartCoroutine(cameraEffect.CameraEffect(0.5f, 1.5f));
         }
 
     }
@@ -78,6 +82,8 @@ public class ShaderInputs : MonoBehaviour
         fireRing1.Play();
         fireRing2.Play();
     }
+
+   
 }
 
 
