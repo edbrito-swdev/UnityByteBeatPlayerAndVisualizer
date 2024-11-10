@@ -2,11 +2,14 @@ Shader "Custom/SphereShader"
 {
     Properties
     {
+        [Toggle] _ActivateBBColorChange("Activate ByteBeat Color Change", Int) = 0
         [HDR] _Color("Color", Color) = (1,1,1,1)
+
+        [Toggle] _ActivateBBBackColorChange("Activate ByteBeat Back Color Change", Int) = 0
         [HDR]_BackColor("Back Color", Color) = (1,1,1,1)
+
         _FrontTexture("Front Texture", 2D) = "white" {}
         _BackTexture("Back Texture", 2D) = "white" {}
-
 
         _DissolveMaskFront("Front Dissolve Texture" , 2D) = "white" {}
         _DissolveMaskBack("Back Dissolve Texture", 2D) = "white" {}
@@ -43,17 +46,19 @@ Shader "Custom/SphereShader"
 
         half _Glossiness;
         half _Metallic;
-        fixed4 _Color;
+        float4 _Color;
         float _DissolveAmount;
         float _ScrollingMultiplier;
         float4 _ScrollingDirection;
         float _ExtrudeAmount;
 
+        int _ActivateBBColorChange;
+
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
         // #pragma instancing_options assumeuniformscaling
         UNITY_INSTANCING_BUFFER_START(Props)
-            // put more per-instance properties here
+        // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
 
         void vert(inout appdata_full v)
@@ -64,7 +69,16 @@ Shader "Custom/SphereShader"
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D(_FrontTexture, IN.uv_FrontTexture + frac((_ScrollingDirection.xy * _Time.yy))) * _Color;
+            float4 c;
+            c = tex2D(_FrontTexture, IN.uv_FrontTexture + frac((_ScrollingDirection.xy * _Time.yy))) * _Color;
+           
+            if (_ActivateBBColorChange)
+            {
+                c = tex2D(_FrontTexture, IN.uv_FrontTexture + frac((_ScrollingDirection.xy * _Time.yy))) * (_Color * (_ExtrudeAmount * tan(_Time.x)));
+                //o.Albedo = c.rgb;
+            }
+          
+            //c = tex2D(_FrontTexture, IN.uv_FrontTexture + frac((_ScrollingDirection.xy * _Time.yy))) * _Color;
             o.Albedo = c.rgb;
 
             float3 dissolveFront = tex2D(_DissolveMaskFront, IN.uv_DissolveMaskFront + frac((_ScrollingDirection.xy * _Time.yy)));//* (_Time.x * _ScrollingMultiplier));

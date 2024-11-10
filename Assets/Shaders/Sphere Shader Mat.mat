@@ -38,11 +38,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ActivateBBBackColorChange: 0
+    - _ActivateBBColorChange: 0
     - _DissolveAmount: 0.73
     - _ExtrudeAmount: 0
     - _Glossiness: 0
     - _Metallic: 0
     - _ScrollingMultiplier: 1
+    - _Thing: 0
     m_Colors:
     - _BackColor: {r: 2, g: 2, b: 2, a: 1}
     - _Color: {r: 2, g: 0, b: 0, a: 1}
